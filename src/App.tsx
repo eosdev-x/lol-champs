@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { searchChampions, getChampionDetails } from './api/lolApi';
 import SearchBar from './components/SearchBar';
 import ChampionModal from './components/ChampionModal';
