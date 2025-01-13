@@ -30,27 +30,52 @@ export interface ChampionResponse {
 
 export interface ChampionDetail {
   meta: {
-    winRate: number;
-    pickRate: number;
-    banRate: number;
-    tier: string;
-  };
-  abilities: {
-    id: string;
-    name: string;
-    description: string;
-    icon: string;
-  }[];
-  builds: {
-    items: {
+    // Combat Ratings
+    ratings: {
+      damage: number;
+      toughness: number;
+      mobility: number;
+      utility: number;
+      difficulty: number;
+    };
+    
+    // Level 18 Stats
+    maxStats: {
+      health: number;
+      mana: number;
+      armor: number;
+      magicResist: number;
+      attackDamage: number;
+      attackSpeed: number;
+    };
+    
+    // Ability Information
+    abilities: Array<{
+      name: string;
+      cooldown: number;
+      cooldownPerLevel: number;
+      resource: string;
+      resourceCost: number;
+    }>;
+    
+    // Champion Identity
+    roles: string[];
+    resource: string;
+    range: number;
+    moveSpeed: number;
+    
+    // Additional Info
+    patch: string;
+    style: string;
+    
+    // Build Information
+    recommendedItems: Array<{
       id: string;
       name: string;
-      icon: string;
-    }[];
-    runes: {
-      id: string;
-      name: string;
-      icon: string;
-    }[];
+      image: {
+        full: string;
+      };
+    }>;
+    recommendedRunes: any[];
   };
 }

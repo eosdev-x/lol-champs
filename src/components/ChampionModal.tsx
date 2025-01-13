@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Sword, Shield, Heart, Zap, Percent, Users } from 'lucide-react';
+import { X, Sword, Shield, Heart, Zap, Percent, Users, Star, Brain } from 'lucide-react';
 import type { Champion, ChampionDetail } from '../types/lol';
 
 interface ChampionModalProps {
@@ -77,110 +77,108 @@ const ChampionModal: React.FC<ChampionModalProps> = ({
                   </div>
                 ) : championDetail ? (
                   <>
-                    {/* Meta Stats */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Combat Ratings */}
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
                       <div className="bg-gray-700/50 p-4 rounded-lg flex items-center gap-3">
-                        <Percent className="text-green-400" />
+                        <Sword className="text-red-400" />
                         <div>
-                          <p className="text-sm text-gray-300">Win Rate</p>
-                          <p className="text-xl font-bold">{championDetail.meta.winRate}%</p>
+                          <p className="text-sm text-gray-300">Damage</p>
+                          <p className="text-xl font-bold">{championDetail.meta.ratings.damage}</p>
                         </div>
                       </div>
                       <div className="bg-gray-700/50 p-4 rounded-lg flex items-center gap-3">
-                        <Users className="text-blue-400" />
+                        <Shield className="text-blue-400" />
                         <div>
-                          <p className="text-sm text-gray-300">Pick Rate</p>
-                          <p className="text-xl font-bold">{championDetail.meta.pickRate}%</p>
+                          <p className="text-sm text-gray-300">Toughness</p>
+                          <p className="text-xl font-bold">{championDetail.meta.ratings.toughness}</p>
                         </div>
                       </div>
                       <div className="bg-gray-700/50 p-4 rounded-lg flex items-center gap-3">
-                        <Shield className="text-yellow-400" />
+                        <Zap className="text-yellow-400" />
                         <div>
-                          <p className="text-sm text-gray-300">Ban Rate</p>
-                          <p className="text-xl font-bold">{championDetail.meta.banRate}%</p>
+                          <p className="text-sm text-gray-300">Mobility</p>
+                          <p className="text-xl font-bold">{championDetail.meta.ratings.mobility}</p>
+                        </div>
+                      </div>
+                      <div className="bg-gray-700/50 p-4 rounded-lg flex items-center gap-3">
+                        <Star className="text-purple-400" />
+                        <div>
+                          <p className="text-sm text-gray-300">Utility</p>
+                          <p className="text-xl font-bold">{championDetail.meta.ratings.utility}</p>
+                        </div>
+                      </div>
+                      <div className="bg-gray-700/50 p-4 rounded-lg flex items-center gap-3">
+                        <Brain className="text-orange-400" />
+                        <div>
+                          <p className="text-sm text-gray-300">Difficulty</p>
+                          <p className="text-xl font-bold">{championDetail.meta.ratings.difficulty}</p>
                         </div>
                       </div>
                     </div>
 
-                    {/* Base Stats */}
-                    <div>
-                      <h3 className="text-xl font-bold mb-4">Base Stats</h3>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div className="flex items-center gap-2">
-                          <Heart className="text-red-400" />
-                          <div>
-                            <p className="text-sm text-gray-300">Health</p>
-                            <p>{champion.stats.hp} (+{champion.stats.hpperlevel})</p>
-                          </div>
+                    {/* Champion Stats */}
+                    <div className="bg-gray-700/30 p-6 rounded-lg mb-8">
+                      <h3 className="text-xl font-bold mb-4">Level 18 Stats</h3>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                        <div>
+                          <p className="text-gray-400 mb-1">Health</p>
+                          <p className="text-2xl font-bold">{championDetail.meta.maxStats.health}</p>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Shield className="text-blue-400" />
-                          <div>
-                            <p className="text-sm text-gray-300">Armor</p>
-                            <p>{champion.stats.armor} (+{champion.stats.armorperlevel})</p>
-                          </div>
+                        <div>
+                          <p className="text-gray-400 mb-1">{championDetail.meta.resource}</p>
+                          <p className="text-2xl font-bold">{championDetail.meta.maxStats.mana}</p>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Sword className="text-yellow-400" />
-                          <div>
-                            <p className="text-sm text-gray-300">Attack Damage</p>
-                            <p>{champion.stats.attackdamage} (+{champion.stats.attackdamageperlevel})</p>
-                          </div>
+                        <div>
+                          <p className="text-gray-400 mb-1">Attack Damage</p>
+                          <p className="text-2xl font-bold">{championDetail.meta.maxStats.attackDamage}</p>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Zap className="text-purple-400" />
-                          <div>
-                            <p className="text-sm text-gray-300">Attack Speed</p>
-                            <p>{champion.stats.attackspeed} (+{champion.stats.attackspeedperlevel}%)</p>
-                          </div>
+                        <div>
+                          <p className="text-gray-400 mb-1">Armor</p>
+                          <p className="text-2xl font-bold">{championDetail.meta.maxStats.armor}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400 mb-1">Magic Resist</p>
+                          <p className="text-2xl font-bold">{championDetail.meta.maxStats.magicResist}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400 mb-1">Attack Speed</p>
+                          <p className="text-2xl font-bold">{championDetail.meta.maxStats.attackSpeed.toFixed(2)}</p>
                         </div>
                       </div>
                     </div>
 
                     {/* Abilities */}
-                    <div>
-                      <h3 className="text-xl font-bold mb-4">Abilities</h3>
-                      <div className="grid gap-4">
-                        {championDetail.abilities.map((ability) => (
-                          <div key={ability.id} className="bg-gray-700/50 p-4 rounded-lg">
-                            <div className="flex items-start gap-4">
-                              <img
-                                src={ability.icon}
-                                alt={ability.name}
-                                className="w-16 h-16 rounded-lg"
-                              />
-                              <div>
-                                <h4 className="font-bold">{ability.name}</h4>
-                                <p className="text-gray-300">{ability.description}</p>
-                              </div>
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-bold">Abilities</h3>
+                      {championDetail.meta.abilities.map((ability, index) => (
+                        <div key={index} className="bg-gray-700/30 p-4 rounded-lg">
+                          <h4 className="font-bold mb-2">{ability.name}</h4>
+                          <div className="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                              <p className="text-gray-400">Cooldown</p>
+                              <p>{ability.cooldown}s {ability.cooldownPerLevel > 0 ? `(${ability.cooldownPerLevel}s per level)` : ''}</p>
+                            </div>
+                            <div>
+                              <p className="text-gray-400">Cost</p>
+                              <p>{ability.resourceCost} {ability.resource}</p>
                             </div>
                           </div>
-                        ))}
-                      </div>
+                        </div>
+                      ))}
                     </div>
 
-                    {/* Recommended Builds */}
-                    {championDetail.builds.items.length > 0 && (
-                      <div>
-                        <h3 className="text-xl font-bold mb-4">Recommended Build</h3>
-                        <div className="bg-gray-700/50 p-4 rounded-lg">
-                          <div className="flex flex-wrap gap-2">
-                            {championDetail.builds.items.map((item) => (
-                              <div key={item.id} className="relative group">
-                                <img
-                                  src={item.icon}
-                                  alt={item.name}
-                                  className="w-12 h-12 rounded-lg"
-                                />
-                                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 rounded text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
-                                  {item.name}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
+                    {/* Additional Info */}
+                    <div className="mt-8 p-4 bg-gray-700/30 rounded-lg">
+                      <div className="flex justify-between text-sm text-gray-400">
+                        <div>
+                          <p>Playstyle: <span className="text-white">{championDetail.meta.style}</span></p>
+                          <p>Roles: <span className="text-white">{championDetail.meta.roles.join(', ')}</span></p>
+                        </div>
+                        <div className="text-right">
+                          <p>Current Patch: <span className="text-white">{championDetail.meta.patch}</span></p>
                         </div>
                       </div>
-                    )}
+                    </div>
                   </>
                 ) : null}
               </div>
