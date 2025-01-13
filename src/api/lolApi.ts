@@ -92,7 +92,13 @@ export const getChampionDetails = async (championId: string, version: string): P
       metaResponse.json()
     ]);
 
-    const abilities = champData.spells.map((spell: any, index: number) => ({
+    // The champion data is nested under data.{championId}
+    const championData = champData.data[championId];
+    if (!championData) {
+      throw new Error('Champion data structure is invalid');
+    }
+
+    const abilities = championData.spells.map((spell: any, index: number) => ({
       id: ['Q', 'W', 'E', 'R'][index],
       name: spell.name,
       description: spell.description,
@@ -102,9 +108,9 @@ export const getChampionDetails = async (championId: string, version: string): P
     // Add passive ability
     abilities.unshift({
       id: 'P',
-      name: champData.passive.name,
-      description: champData.passive.description,
-      icon: `https://ddragon.leagueoflegends.com/cdn/${version}/img/passive/${champData.passive.image.full}`,
+      name: championData.passive.name,
+      description: championData.passive.description,
+      icon: `https://ddragon.leagueoflegends.com/cdn/${version}/img/passive/${championData.passive.image.full}`,
     });
 
     return {
@@ -116,16 +122,16 @@ export const getChampionDetails = async (championId: string, version: string): P
       },
       abilities,
       builds: {
-        items: metaData.recommendedItems.map((item: any) => ({
+        items: metaData.recommendedItems?.map((item: any) => ({
           id: item.id,
           name: item.name,
           icon: `https://ddragon.leagueoflegends.com/cdn/${version}/img/item/${item.image.full}`,
-        })),
-        runes: metaData.recommendedRunes.map((rune: any) => ({
+        })) || [],
+        runes: metaData.recommendedRunes?.map((rune: any) => ({
           id: rune.id,
           name: rune.name,
           icon: `https://ddragon.leagueoflegends.com/cdn/img/${rune.icon}`,
-        })),
+        })) || [],
       },
     };
   } catch (error) {
