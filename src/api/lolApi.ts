@@ -1,3 +1,5 @@
+import type { Champion, ChampionResponse, ChampionDetail } from '../types/lol';
+
 const API_BASE = 'https://lol-api.imtux.workers.dev';
 
 const API_HEADERS = {
@@ -52,5 +54,84 @@ export const searchChampions = async (query: string): Promise<[Champion[], strin
       throw error;
     }
     throw new Error('Failed to fetch champions');
+  }
+};
+
+export const getChampionDetails = async (championId: string, version: string): Promise<ChampionDetail> => {
+  try {
+    // Fetch champion abilities and lore
+    const champResponse = await fetch(
+      `${API_BASE}/champions/${championId}`,
+      {
+        method: 'GET',
+        headers: API_HEADERS,
+        mode: 'cors'
+      }
+    );
+
+    if (!champResponse.ok) {
+      handleApiError(champResponse.status, 'Champion Details');
+    }
+
+    // Fetch champion meta data
+    const metaResponse = await fetch(
+      `${API_BASE}/champions/${championId}/meta`,
+      {
+        method: 'GET',
+        headers: API_HEADERS,
+        mode: 'cors'
+      }
+    );
+
+    if (!metaResponse.ok) {
+      handleApiError(metaResponse.status, 'Champion Meta');
+    }
+
+    const [champData, metaData] = await Promise.all([
+      champResponse.json(),
+      metaResponse.json()
+    ]);
+
+    const abilities = champData.spells.map((spell: any, index: number) => ({
+      id: ['Q', 'W', 'E', 'R'][index],
+      name: spell.name,
+      description: spell.description,
+      icon: `https://ddragon.leagueoflegends.com/cdn/${version}/img/spell/${spell.image.full}`,
+    }));
+
+    // Add passive ability
+    abilities.unshift({
+      id: 'P',
+      name: champData.passive.name,
+      description: champData.passive.description,
+      icon: `https://ddragon.leagueoflegends.com/cdn/${version}/img/passive/${champData.passive.image.full}`,
+    });
+
+    return {
+      meta: {
+        winRate: metaData.winRate,
+        pickRate: metaData.pickRate,
+        banRate: metaData.banRate,
+        tier: metaData.tier,
+      },
+      abilities,
+      builds: {
+        items: metaData.recommendedItems.map((item: any) => ({
+          id: item.id,
+          name: item.name,
+          icon: `https://ddragon.leagueoflegends.com/cdn/${version}/img/item/${item.image.full}`,
+        })),
+        runes: metaData.recommendedRunes.map((rune: any) => ({
+          id: rune.id,
+          name: rune.name,
+          icon: `https://ddragon.leagueoflegends.com/cdn/img/${rune.icon}`,
+        })),
+      },
+    };
+  } catch (error) {
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new Error('Failed to fetch champion details');
   }
 };

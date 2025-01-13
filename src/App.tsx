@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { searchChampions } from './api/lolApi';
+import { searchChampions, getChampionDetails } from './api/lolApi';
 import SearchBar from './components/SearchBar';
 import ChampionModal from './components/ChampionModal';
 import type { Champion, ChampionDetail } from './types/lol';
@@ -12,6 +12,8 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [selectedChampion, setSelectedChampion] = useState<Champion | null>(null);
   const [championDetail, setChampionDetail] = useState<ChampionDetail | null>(null);
+  const [detailsLoading, setDetailsLoading] = useState(false);
+  const [detailsError, setDetailsError] = useState<string | null>(null);
 
   const handleSearch = async (query: string) => {
     setLoading(true);
@@ -29,35 +31,18 @@ function App() {
 
   const handleChampionClick = async (champion: Champion) => {
     setSelectedChampion(champion);
-    // TODO: Fetch champion details from API
-    // For now using mock data
-    setChampionDetail({
-      meta: {
-        winRate: 51.2,
-        pickRate: 12.5,
-        banRate: 8.3,
-        tier: 'S',
-      },
-      abilities: [
-        {
-          id: 'Q',
-          name: champion.name + ' Q',
-          description: 'Sample ability description',
-          icon: `https://ddragon.leagueoflegends.com/cdn/${version}/img/spell/${champion.id}Q.png`,
-        },
-        // Add more abilities as needed
-      ],
-      builds: {
-        items: [
-          {
-            id: '1001',
-            name: 'Sample Item',
-            icon: `https://ddragon.leagueoflegends.com/cdn/${version}/img/item/1001.png`,
-          },
-        ],
-        runes: [],
-      },
-    });
+    setDetailsLoading(true);
+    setDetailsError(null);
+    setChampionDetail(null);
+
+    try {
+      const details = await getChampionDetails(champion.id, version);
+      setChampionDetail(details);
+    } catch (err) {
+      setDetailsError(err instanceof Error ? err.message : 'Failed to load champion details');
+    } finally {
+      setDetailsLoading(false);
+    }
   };
 
   return (
@@ -137,7 +122,13 @@ function App() {
           champion={selectedChampion}
           championDetail={championDetail}
           isOpen={selectedChampion !== null}
-          onClose={() => setSelectedChampion(null)}
+          onClose={() => {
+            setSelectedChampion(null);
+            setChampionDetail(null);
+            setDetailsError(null);
+          }}
+          loading={detailsLoading}
+          error={detailsError}
         />
       </div>
     </div>
