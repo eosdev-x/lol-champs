@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { searchChampions } from './api/lolApi';
 import SearchBar from './components/SearchBar';
-import type { Champion } from './types/lol';
+import ChampionModal from './components/ChampionModal';
+import type { Champion, ChampionDetail } from './types/lol';
 import { Shield, Sword, Heart, Zap } from 'lucide-react';
 
 function App() {
@@ -9,6 +10,8 @@ function App() {
   const [version, setVersion] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedChampion, setSelectedChampion] = useState<Champion | null>(null);
+  const [championDetail, setChampionDetail] = useState<ChampionDetail | null>(null);
 
   const handleSearch = async (query: string) => {
     setLoading(true);
@@ -22,6 +25,39 @@ function App() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleChampionClick = async (champion: Champion) => {
+    setSelectedChampion(champion);
+    // TODO: Fetch champion details from API
+    // For now using mock data
+    setChampionDetail({
+      meta: {
+        winRate: 51.2,
+        pickRate: 12.5,
+        banRate: 8.3,
+        tier: 'S',
+      },
+      abilities: [
+        {
+          id: 'Q',
+          name: champion.name + ' Q',
+          description: 'Sample ability description',
+          icon: `https://ddragon.leagueoflegends.com/cdn/${version}/img/spell/${champion.id}Q.png`,
+        },
+        // Add more abilities as needed
+      ],
+      builds: {
+        items: [
+          {
+            id: '1001',
+            name: 'Sample Item',
+            icon: `https://ddragon.leagueoflegends.com/cdn/${version}/img/item/1001.png`,
+          },
+        ],
+        runes: [],
+      },
+    });
   };
 
   return (
@@ -47,7 +83,8 @@ function App() {
           {champions.map((champion) => (
             <div
               key={champion.id}
-              className="bg-gray-800 rounded-lg p-6 hover:bg-gray-700 transition-all"
+              className="bg-gray-800 rounded-lg p-6 hover:bg-gray-700 transition-all cursor-pointer"
+              onClick={() => handleChampionClick(champion)}
             >
               <div className="relative mb-4">
                 <img
@@ -95,6 +132,13 @@ function App() {
             </div>
           ))}
         </div>
+
+        <ChampionModal
+          champion={selectedChampion}
+          championDetail={championDetail}
+          isOpen={selectedChampion !== null}
+          onClose={() => setSelectedChampion(null)}
+        />
       </div>
     </div>
   );
