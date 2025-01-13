@@ -4,6 +4,7 @@ import SearchBar from './components/SearchBar';
 import ChampionModal from './components/ChampionModal';
 import type { Champion, ChampionDetail } from './types/lol';
 import { Shield, Sword, Heart, Zap } from 'lucide-react';
+import './styles/neon.css';
 
 function App() {
   const [champions, setChampions] = useState<Champion[]>([]);
@@ -48,7 +49,9 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold text-center mb-8">Mama's LOL Search</h1>
+        <h1 className="text-4xl font-bold text-center mb-8 neon-text">
+          Mama's LOL Search
+        </h1>
         
         <SearchBar onSearch={handleSearch} />
         
