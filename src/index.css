@@ -219,6 +219,7 @@ input:focus-visible {
 }
 
 .hero-panel h1 {
+  padding-bottom: 1rem;
   background: linear-gradient(180deg, #fff7e8 20%, #c8aa6e 82%);
   background-clip: text;
   color: transparent;
