@@ -10,21 +10,28 @@ const CACHE_TTL_SECONDS = 60 * 60;
 
 const app = new Hono<WorkerApp>();
 
+function resolveAllowedOrigin(requestOrigin: string | undefined, configured: string): string | null {
+  if (!requestOrigin) return null;
+  const allowed = configured.split(',').map((origin) => origin.trim()).filter(Boolean);
+  return allowed.includes(requestOrigin) ? requestOrigin : null;
+}
+
 const restrictedCors: MiddlewareHandler<WorkerApp> = async (context, next) => {
   const requestOrigin = context.req.header('Origin');
-  const allowedOrigin = context.env.ALLOWED_ORIGIN || DEFAULT_ALLOWED_ORIGIN;
+  const allowedOrigin = resolveAllowedOrigin(
+    requestOrigin,
+    context.env.ALLOWED_ORIGIN || DEFAULT_ALLOWED_ORIGIN,
+  );
 
   if (context.req.method === 'OPTIONS') {
-    if (requestOrigin && requestOrigin !== allowedOrigin) {
+    if (requestOrigin && !allowedOrigin) {
       return context.json({ error: 'Origin not allowed' }, 403);
     }
 
     return new Response(null, {
       status: 204,
       headers: {
-        ...(requestOrigin === allowedOrigin
-          ? { 'Access-Control-Allow-Origin': allowedOrigin }
-          : {}),
+        ...(allowedOrigin ? { 'Access-Control-Allow-Origin': allowedOrigin } : {}),
         'Access-Control-Allow-Methods': 'GET, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type',
         'Access-Control-Max-Age': '86400',
@@ -35,7 +42,7 @@ const restrictedCors: MiddlewareHandler<WorkerApp> = async (context, next) => {
 
   await next();
 
-  if (requestOrigin === allowedOrigin) {
+  if (allowedOrigin) {
     context.header('Access-Control-Allow-Origin', allowedOrigin);
   }
   context.header('Vary', 'Origin');

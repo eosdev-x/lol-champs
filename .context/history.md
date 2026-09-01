@@ -24,3 +24,20 @@
 - Final `npm test` — PASS (3 files, 5 tests)
 - `git diff --check` — PASS
 **Deploy/push:** Not run, per scope.
+
+## [2026-09-01] Sonic verify
+**Agent:** Sonic
+**Branch:** andy/encyclopedia-overhaul @ 56752e4
+**Changes:** Independent re-run of lint/test/build; security skim of worker CORS, champion-id validation, and ability HTML stripping.
+**Verification:**
+- `npm run lint` — PASS
+- `npm test` — PASS (3 files, 5 tests)
+- `npm run build` — PASS (Vite 6.4.3, 2222 modules)
+- `git diff --check` — PASS
+- No `innerHTML` / `dangerouslySetInnerHTML`; CORS is origin-restricted; no secrets in tree
+**Notes:** Live worker at lol-api.imtux.workers.dev is still the old code. New frontend still talks to `/champions` and `/champions/:id`, so local `npm run dev` works against the current live API. Do not deploy the new Worker until `ALLOWED_ORIGIN` matches the real frontend origin.
+
+## [2026-09-01] Go live
+**Agent:** Sonic
+**Branch:** andy/encyclopedia-overhaul
+**Changes:** Set Worker `ALLOWED_ORIGIN` to `https://lol.cryptonicflux.com`. Added Pages SPA `_redirects`. Deploying Worker `lol-api` and Pages `lol-champs`.
